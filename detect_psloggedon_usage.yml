@@ -1,0 +1,21 @@
+title: Detecting traces of PsLoggedOn.exe
+description: Detecting traces of PsLoggedOn.exe using EventID 5145 -- 2 occurrences of 5145 with Relative Target Name in {winreg,srvsvc} AND same [SrcIP, Account Name, SrcPort] within 1 minute
+author: Maarten Goet
+tags:
+  - attack.lateral_movement
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 5145
+    RelativeTargetName: 
+      - 'srvsvc'
+      - 'winreg'
+    SubjectUserName: '*'
+    SourceAddress: '*'
+    SourcePort: '*'
+timeframe: 1m
+condition:
+  - selection | count(EventID) by SubjectUserName,SourceAddress,SourcePort = 2
+level: medium
